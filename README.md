@@ -1,49 +1,67 @@
 # 🧠 LatentSense
 
 > **Downloading AI's pattern recognition into human intuition.**  
-> A domain-agnostic cognitive training engine that builds "expert intuition" via A/B testing and prediction error.
+> A domain-agnostic cognitive training engine that builds "expert intuition" via A/B micro-testing and prediction error.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)]()
-[![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react)]()
-[![LLM](https://img.shields.io/badge/LLM-GPT--4o_%7C_Claude-green)]()
+[![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit)]()
+[![LLM](https://img.shields.io/badge/LLM-Local_(Ollama)_or_Cloud-green)]()
 
 ---
 
 ## 🌟 The Paradigm Shift: From "Knowing" to "Feeling"
 
-Traditional learning optimizes for **System 2** (slow, logical memorization). You read rules, memorize vocabulary, and solve step-by-step.  
+Traditional learning optimizes for **System 2** (slow, logical memorization). You read grammar rules, memorize vocabulary lists, and solve problems step-by-step.  
 **LatentSense** optimizes for **System 1** (fast, intuitive pattern recognition). 
 
-Grandmasters don't calculate every chess move; they *feel* the right pattern. Native speakers don't conjugate verbs in their heads; they *feel* what sounds right. LatentSense uses the high-dimensional statistical intuition of Large Language Models (LLMs) to train your brain's neural pathways, allowing you to "download" expert intuition directly into your subconscious.
+Chess grandmasters don't calculate every possible move; they *feel* the right pattern. Native speakers don't mentally conjugate verbs; they *feel* what sounds right. LatentSense leverages the high-dimensional statistical intuition of Large Language Models (LLMs) to train your brain's neural pathways, allowing you to "download" expert-level pattern recognition directly into your subconscious.
 
-## 🔬 The Science Behind It
+---
 
-LatentSense is not a quiz app. It is a cognitive sandbox built on proven principles of cognitive science and Second Language Acquisition (SLA):
+## 🔬 The Science & AI Architecture Behind It
 
-*   **Prediction Error (Rescorla-Wagner Model):** The brain's synaptic weights update most strongly when a prediction is violated. By presenting micro-differences in A/B scenarios, we maximize the "prediction error" when your intuition is wrong, forcing rapid neural rewiring.
-*   **Latent Space Alignment:** LLMs possess a deep, statistical understanding of concepts (their "latent space"). We use the LLM to generate scenarios that test the boundaries of this space, effectively using the AI's pattern recognition as the ground truth for human training.
-*   **Desirable Difficulties & Interleaving:** We don't block-practice. We mix domains and subtly shift contexts to force your brain to constantly discriminate and adapt, proven to vastly improve long-term retention and transfer.
-*   **Spaced Repetition (FSRS):** Concepts are resurfaced exactly at the edge of your forgetting curve.
+LatentSense is not a quiz app. It is a cognitive sandbox designed by mapping **human cognitive learning mechanisms** directly onto **AI training methodologies**.
+
+### 1. Prediction Error as "Human Backpropagation"
+*   **Cognitive Science:** According to the Rescorla-Wagner model, the brain's synaptic weights update most strongly when a prediction is violated (Prediction Error). 
+*   **AI Parallel:** This is the exact biological equivalent of **Backpropagation** in neural networks. 
+*   **Our Design:** By presenting A/B scenarios with *micro-differences*, we intentionally trigger a prediction error when your gut feeling is wrong. The immediate, high-quality feedback acts as the "error signal," forcing rapid neural rewiring and updating your internal "weights."
+
+### 2. Latent Space Distillation (Pattern Recognition Transfer)
+*   **Cognitive Science:** Experts use "chunking" to recognize complex patterns instantly, bypassing slow logical deduction.
+*   **AI Parallel:** LLMs navigate a high-dimensional "latent space" where concepts are mapped by statistical probability and co-occurrence.
+*   **Our Design:** We use the LLM not just as a text generator, but as an "Expert Oracle." It generates scenarios that test the boundaries of its latent space, effectively distilling the AI's statistical pattern recognition into human-understandable "Core Images" and "Rhythms."
+
+### 3. Discrimination Learning via Desirable Difficulties
+*   **Cognitive Science:** Robert Bjork's "Desirable Difficulties" and "Interleaving" prove that mixing contexts and forcing discrimination between highly similar concepts vastly improves long-term retention and transfer, compared to blocked practice.
+*   **Our Design:** The system avoids obvious right/wrong questions. It forces you to discriminate between two *plausible* options, maximizing the cognitive load exactly where it builds true intuition.
+
+### 4. Spaced Repetition (FSRS)
+*   Concepts are resurfaced dynamically at the edge of your forgetting curve, ensuring that the newly formed intuitive pathways are consolidated into long-term memory.
+
+---
 
 ## ⚙️ How It Works
 
 ```mermaid
 graph LR
-    A[Concept Graph] --> B(LLM Scenario Generator)
+    A[Domain Ontology / Concept Graph] --> B(LLM Scenario Generator)
     B --> C{A/B Micro-Scenarios}
     C --> D((User's Snap Judgment))
-    D --> E{LLM Evaluator}
-    E -->|Feedback: The 'Expert Eye'| D
+    D --> E{LLM Evaluator & Feedback}
+    E -->|Explains the 'Expert Eye'| D
     D --> F[(Cognitive State DB)]
-    F -->|Updates Mastery & Next Review| A
+    F -->|Updates Mastery via FSRS| A
 ```
 
-1.  **Targeted Generation:** The system selects a concept from the knowledge graph (e.g., Russian motion verbs, mathematical elegance, chess positional play).
-2.  **A/B Micro-Testing:** The LLM generates two highly similar options. One is subtly more "native," "elegant," or "optimal."
-3.  **Snap Judgment:** You choose A or B based purely on gut feeling. No overthinking.
-4.  **Expert Feedback:** If you err, the LLM doesn't just give the answer. It explains the *Core Image*, the *rhythm*, or the *hidden signal* that a native expert would instantly recognize.
-5.  **State Update:** Your cognitive state is updated, and the next scenario is dynamically adjusted to maintain the `i+1` (optimal difficulty) threshold.
+1. **Targeted Generation:** The system selects a concept (e.g., Russian motion verb prefixes, mathematical proof elegance, chess positional play).
+2. **A/B Micro-Testing:** The LLM generates two highly similar options. One is subtly more "native," "elegant," or "optimal."
+3. **Snap Judgment:** You choose A or B based purely on gut feeling. No overthinking allowed.
+4. **Expert Feedback:** If you err, the LLM doesn't just give the answer. It explains the *Core Image*, the *rhythm*, or the *hidden signal* that a native expert would instantly recognize, bridging the gap between your error and the correct pattern.
+5. **State Update:** Your cognitive state is updated, and the next scenario is dynamically adjusted to maintain the `i+1` (optimal difficulty) threshold.
+
+---
 
 ## 🌍 Domain-Agnostic Applications
 
@@ -52,23 +70,32 @@ Because it targets *pattern recognition* rather than specific facts, LatentSense
 *   🗣️ **Language Acquisition:** Nuance, collocations, pragmatics, and the "feel" of a native speaker.
 *   🧮 **Mathematics:** Geometric intuition, recognizing elegant proofs, and choosing the right problem-solving heuristic.
 *   ♟️ **Strategy (Chess/Go):** Positional evaluation, recognizing tactical patterns, and assessing board dynamics.
-*   💼 **Business & Design:** UX micro-interactions, negotiation tactics, and reading psychological subtext in emails.
+*   💼 **Business & Design:** UX micro-interactions, negotiation tactics, and reading psychological subtext.
+
+---
 
 ## 🛠️ Tech Stack
 
-*   **Backend:** Python, FastAPI (for high-performance async LLM streaming).
-*   **AI Engine:** OpenAI API (GPT-4o) / Anthropic API (Claude 3.5) for nuanced scenario generation and evaluation.
-*   **Frontend:** React / Next.js (or Flutter for mobile). UI is designed to be minimal and swipe-based (Tinder-like) to encourage rapid, System-1 responses.
-*   **Database:** PostgreSQL (User state & FSRS scheduling) + Neo4j (Concept Graph & Ontology mapping).
+Designed for rapid iteration and privacy-first local development, while remaining scalable to cloud infrastructure.
 
-## 🚀 Getting Started
+*   **Core Logic:** Python 3.10+
+*   **UI/UX:** Streamlit (for rapid, minimal, swipe-like A/B testing interfaces without frontend build complexity).
+*   **AI Engine:** 
+    *   *Local (Recommended for PoC/Privacy):* Ollama (Llama 3, Qwen 2.5)
+    *   *Cloud (For advanced nuance):* OpenAI API (GPT-4o) / Anthropic API (Claude 3.5)
+*   **Database:** SQLite (Local user state & FSRS scheduling) / PostgreSQL (Scalable deployment).
+
+---
+
+## 🚀 Getting Started (Local PoC)
+
+The easiest way to experience LatentSense is to run it locally with Ollama. No API keys or cloud dependencies required.
 
 ### Prerequisites
-*   Python 3.10+
-*   Node.js 18+
-*   An API key for OpenAI or Anthropic.
+1. Install [Ollama](https://ollama.com/) and pull a model: `ollama pull qwen2.5` (or `llama3.1`)
+2. Install Python 3.10+
 
-### Installation
+### Installation & Run
 
 1. Clone the repository:
    ```bash
@@ -76,31 +103,29 @@ Because it targets *pattern recognition* rather than specific facts, LatentSense
    cd latentsense
    ```
 
-2. Set up the backend:
+2. Install dependencies:
    ```bash
-   cd backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
    pip install -r requirements.txt
-   cp .env.example .env  # Add your LLM API keys here
-   uvicorn main:app --reload
    ```
 
-3. Set up the frontend:
+3. Run the Streamlit app:
    ```bash
-   cd ../frontend
-   npm install
-   npm run dev
+   streamlit run app.py
    ```
+   *The app will automatically connect to your local Ollama instance at `http://localhost:11434`.*
+
+---
 
 ## 🗺️ Roadmap
 
 - [x] Core A/B generation engine & LLM integration
+- [x] Local LLM (Ollama) PoC with robust JSON error handling
 - [x] Cognitive state tracking (FSRS implementation)
-- [ ] Frontend MVP (Swipe-based UI for Web)
+- [ ] Frontend MVP (Mobile-friendly swipe UI via Streamlit or Flutter)
 - [ ] Domain Plugin System (Allow community to add Math, Chess, etc.)
-- [ ] Offline mode with local SLMs (e.g., Llama 3)
 - [ ] Multiplayer / Collaborative intuition mapping
+
+---
 
 ## 🤝 Contributing
 
@@ -110,3 +135,4 @@ If you want to design a new "Domain Ontology" or improve the prompt engineering 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
