@@ -1,138 +1,153 @@
 # 🧠 LatentSense
 
 > **Downloading AI's pattern recognition into human intuition.**  
-> A domain-agnostic cognitive training engine that builds "expert intuition" via A/B micro-testing and prediction error.
+> An evolutionary cognitive architecture that dynamically composes learning strategies from scientific literature to hack neuroplasticity and build expert intuition.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)]()
-[![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit)]()
-[![LLM](https://img.shields.io/badge/LLM-Local_(Ollama)_or_Cloud-green)]()
+[![Architecture](https://img.shields.io/badge/Architecture-Agentic_%7C_Evolutionary-purple)]()
+[![Local AI](https://img.shields.io/badge/Local_AI-Ollama_(Llama_3_%7C_Qwen)-green)]()
 
 ---
 
-## 🌟 The Paradigm Shift: From "Knowing" to "Feeling"
+## 🌟 The Vision: From Static Tools to Evolutionary Learning
 
-Traditional learning optimizes for **System 2** (slow, logical memorization). You read grammar rules, memorize vocabulary lists, and solve problems step-by-step.  
-**LatentSense** optimizes for **System 1** (fast, intuitive pattern recognition). 
+Traditional learning apps rely on static, one-size-fits-all algorithms.  
+**LatentSense** is different. It is an **Evolutionary Cognitive Engine** inspired by the "AI Scientist" paradigm. 
 
-Chess grandmasters don't calculate every possible move; they *feel* the right pattern. Native speakers don't mentally conjugate verbs; they *feel* what sounds right. LatentSense leverages the high-dimensional statistical intuition of Large Language Models (LLMs) to train your brain's neural pathways, allowing you to "download" expert-level pattern recognition directly into your subconscious.
+Instead of hardcoding a single learning method, LatentSense maintains a dynamic ontology of cognitive science and Second Language Acquisition (SLA) research. It acts as an autonomous "Cognitive Architect," dynamically composing, testing, and evolving learning strategies (e.g., Interleaving + Elaborative Interrogation + Metacognitive Monitoring) tailored to your brain's unique response patterns.
 
----
-
-## 🔬 The Science & AI Architecture Behind It
-
-LatentSense is not a quiz app. It is a cognitive sandbox designed by mapping **human cognitive learning mechanisms** directly onto **AI training methodologies**.
-
-### 1. Prediction Error as "Human Backpropagation"
-*   **Cognitive Science:** According to the Rescorla-Wagner model, the brain's synaptic weights update most strongly when a prediction is violated (Prediction Error). 
-*   **AI Parallel:** This is the exact biological equivalent of **Backpropagation** in neural networks. 
-*   **Our Design:** By presenting A/B scenarios with *micro-differences*, we intentionally trigger a prediction error when your gut feeling is wrong. The immediate, high-quality feedback acts as the "error signal," forcing rapid neural rewiring and updating your internal "weights."
-
-### 2. Latent Space Distillation (Pattern Recognition Transfer)
-*   **Cognitive Science:** Experts use "chunking" to recognize complex patterns instantly, bypassing slow logical deduction.
-*   **AI Parallel:** LLMs navigate a high-dimensional "latent space" where concepts are mapped by statistical probability and co-occurrence.
-*   **Our Design:** We use the LLM not just as a text generator, but as an "Expert Oracle." It generates scenarios that test the boundaries of its latent space, effectively distilling the AI's statistical pattern recognition into human-understandable "Core Images" and "Rhythms."
-
-### 3. Discrimination Learning via Desirable Difficulties
-*   **Cognitive Science:** Robert Bjork's "Desirable Difficulties" and "Interleaving" prove that mixing contexts and forcing discrimination between highly similar concepts vastly improves long-term retention and transfer, compared to blocked practice.
-*   **Our Design:** The system avoids obvious right/wrong questions. It forces you to discriminate between two *plausible* options, maximizing the cognitive load exactly where it builds true intuition.
-
-### 4. Spaced Repetition (FSRS)
-*   Concepts are resurfaced dynamically at the edge of your forgetting curve, ensuring that the newly formed intuitive pathways are consolidated into long-term memory.
+We don't just apply known science; we build a system that *discovers* the optimal cognitive intervention for you through continuous evolutionary feedback loops.
 
 ---
 
-## ⚙️ How It Works
+## 🔬 The Evolutionary Cognitive Architecture
+
+LatentSense operates on a dynamic, three-tier architecture inspired by evolutionary algorithms and autonomous research agents.
+
+### 1. Cognitive Method Ontology (The "Gene Pool")
+* **Concept:** A vector-graph database of peer-reviewed cognitive science and SLA papers.
+* **Mechanism:** Each "method" (e.g., *Desirable Difficulties, Spaced Repetition, Generation Effect, Neural Context Anchoring*) is stored as a modular "gene" with its defined parameters, target cognitive bias, and expected outcome.
+
+### 2. The AI Scientist Agent (Dynamic Strategy Composer)
+* **Concept:** An LLM-based agent that acts as a real-time cognitive architect.
+* **Mechanism:** Instead of a fixed quiz, the Agent analyzes your current performance data (the "Environment"). It then queries the Ontology to dynamically compose a learning session. 
+  * *Example:* "User is showing 'High Confidence + Wrong' on Russian motion verbs. Hypothesis: Apply 'Discrimination Learning' combined with 'Visual Metaphor Generation' to break the entrenched misconception."
+
+### 3. The "Shinka" Evolutionary Loop (Self-Improving Prompts)
+* **Concept:** Continuous optimization of the learning strategies based on empirical user data.
+* **Mechanism:** The system tracks the "Learning Gain" (reduction in error rate + increase in confidence) for every strategy combination. Using an evolutionary algorithm (or LLM-based prompt mutation), it "mutates" the A/B generation prompts and "selects" the fittest strategies that yield the highest neuroplastic adaptation for your specific brain.
+
+---
+
+## ⚙️ How the Dynamic Loop Works
 
 ```mermaid
-graph LR
-    A[Domain Ontology / Concept Graph] --> B(LLM Scenario Generator)
-    B --> C{A/B Micro-Scenarios}
-    C --> D((User's Snap Judgment))
-    D --> E{LLM Evaluator & Feedback}
-    E -->|Explains the 'Expert Eye'| D
-    D --> F[(Cognitive State DB)]
-    F -->|Updates Mastery via FSRS| A
+graph TD
+    subgraph "1. Cognitive Ontology (Gene Pool)"
+        P1[(Paper: Desirable Difficulties)]
+        P2[(Paper: Metacognitive Monitoring)]
+        P3[(Paper: Neural Context Anchoring)]
+    end
+
+    subgraph "2. AI Scientist Agent (Composer)"
+        A[Analyze User State: e.g., 'Entrenched Misconception']
+        B[Query Ontology & Compose Strategy]
+        C[Generate Dynamic Prompt: 'Combine P1 + P2']
+    end
+
+    subgraph "3. User Interaction (The Experiment)"
+        D[A/B Micro-Scenario + Confidence Input]
+        E((User's Snap Judgment))
+    end
+
+    subgraph "4. Shinka Evolutionary Loop"
+        F[Measure Learning Gain: Accuracy vs Confidence]
+        G{Did strategy succeed?}
+        G -->|Yes| H[Reinforce Strategy Weight]
+        G -->|No| I[Mutate Prompt / Try New Combination]
+        H --> J[(Update Cognitive State DB)]
+        I --> J
+    end
+
+    P1 --> B
+    P2 --> B
+    P3 --> B
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
 ```
 
-1. **Targeted Generation:** The system selects a concept (e.g., Russian motion verb prefixes, mathematical proof elegance, chess positional play).
-2. **A/B Micro-Testing:** The LLM generates two highly similar options. One is subtly more "native," "elegant," or "optimal."
-3. **Snap Judgment:** You choose A or B based purely on gut feeling. No overthinking allowed.
-4. **Expert Feedback:** If you err, the LLM doesn't just give the answer. It explains the *Core Image*, the *rhythm*, or the *hidden signal* that a native expert would instantly recognize, bridging the gap between your error and the correct pattern.
-5. **State Update:** Your cognitive state is updated, and the next scenario is dynamically adjusted to maintain the `i+1` (optimal difficulty) threshold.
+1. **State Analysis:** The system detects a cognitive blind spot (e.g., you keep confusing two similar concepts with high confidence).
+2. **Dynamic Composition:** The AI Scientist pulls relevant "method genes" from the literature and crafts a highly specific, one-off A/B testing scenario designed to break that exact misconception.
+3. **Execution & Measurement:** You engage with the scenario. The system measures not just accuracy, but the *shift* in your confidence and reaction time.
+4. **Evolution:** Successful strategies are reinforced for your profile. Failed strategies trigger prompt mutation, constantly evolving the system to find *your* optimal learning path.
 
 ---
 
 ## 🌍 Domain-Agnostic Applications
 
-Because it targets *pattern recognition* rather than specific facts, LatentSense can be applied to any domain requiring expert intuition:
+Because the core engine manipulates *pattern recognition* and *cognitive load* rather than domain-specific facts, it scales infinitely:
 
-*   🗣️ **Language Acquisition:** Nuance, collocations, pragmatics, and the "feel" of a native speaker.
-*   🧮 **Mathematics:** Geometric intuition, recognizing elegant proofs, and choosing the right problem-solving heuristic.
-*   ♟️ **Strategy (Chess/Go):** Positional evaluation, recognizing tactical patterns, and assessing board dynamics.
-*   💼 **Business & Design:** UX micro-interactions, negotiation tactics, and reading psychological subtext.
+* 🗣️ **Language Acquisition:** Dynamically switching between phonological awareness drills, pragmatic nuance testing, and grammatical intuition based on real-time error patterns.
+* 🧮 **Mathematics & Physics:** Generating "Elegance Discrimination" tasks (choosing the most elegant proof) or visual-spatial intuition builders.
+* ♟️ **Strategy Games:** Evolving tactical pattern recognition by dynamically adjusting the complexity and deception level of board states.
+* 💼 **Professional Skills:** Simulating high-stakes negotiation or UX decision-making with dynamically generated psychological subtext.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack (Scalable from Local PoC to Cloud)
 
-Designed for rapid iteration and privacy-first local development, while remaining scalable to cloud infrastructure.
-
-*   **Core Logic:** Python 3.10+
-*   **UI/UX:** Streamlit (for rapid, minimal, swipe-like A/B testing interfaces without frontend build complexity).
-*   **AI Engine:** 
-    *   *Local (Recommended for PoC/Privacy):* Ollama (Llama 3, Qwen 2.5)
-    *   *Cloud (For advanced nuance):* OpenAI API (GPT-4o) / Anthropic API (Claude 3.5)
-*   **Database:** SQLite (Local user state & FSRS scheduling) / PostgreSQL (Scalable deployment).
+* **Core Logic:** Python 3.10+ (LangChain / LlamaIndex for agentic workflows).
+* **AI Engine:** Local LLM via **Ollama** (PoC) → Scalable to GPT-4o / Claude 3.5 Opus for complex strategy composition.
+* **Knowledge Base:** ChromaDB / Qdrant (Vector DB for paper embeddings) + NetworkX (Graph DB for method relationships).
+* **UI/UX:** Streamlit (Rapid prototyping) → Flutter/React Native (Production mobile app with haptic feedback).
+* **Database:** SQLite (Local) → PostgreSQL (Scalable user state and evolutionary metrics).
 
 ---
 
 ## 🚀 Getting Started (Local PoC)
 
-The easiest way to experience LatentSense is to run it locally with Ollama. No API keys or cloud dependencies required.
+Start by experiencing the core "A/B + Metacognition" loop locally. The evolutionary agent layer can be incrementally added.
 
 ### Prerequisites
-1. Install [Ollama](https://ollama.com/) and pull a model: `ollama pull qwen2.5` (or `llama3.1`)
-2. Install Python 3.10+
+1. Install [Ollama](https://ollama.com/) and pull a model: `ollama pull qwen2.5`
+2. Ensure Python 3.10+ is installed.
 
 ### Installation & Run
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/latentsense.git
-   cd latentsense
-   ```
-
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Run the Streamlit app:
-   ```bash
-   streamlit run app.py
-   ```
-   *The app will automatically connect to your local Ollama instance at `http://localhost:11434`.*
+```bash
+git clone https://github.com/yourusername/latentsense.git
+cd latentsense
+pip install -r requirements.txt
+streamlit run app.py
+```
+*The app connects to your local Ollama instance, establishing the foundational feedback loop.*
 
 ---
 
-## 🗺️ Roadmap
+## 🗺️ Roadmap: The Path to Autonomy
 
-- [x] Core A/B generation engine & LLM integration
-- [x] Local LLM (Ollama) PoC with robust JSON error handling
-- [x] Cognitive state tracking (FSRS implementation)
-- [ ] Frontend MVP (Mobile-friendly swipe UI via Streamlit or Flutter)
-- [ ] Domain Plugin System (Allow community to add Math, Chess, etc.)
-- [ ] Multiplayer / Collaborative intuition mapping
+- [x] **Phase 1: Foundation** - Core A/B generation, Local LLM integration, Metacognitive Monitoring (Confidence Tracking).
+- [ ] **Phase 2: The Ontology** - Build the Vector/Graph database of cognitive science papers and extract modular "method genes."
+- [ ] **Phase 3: The AI Scientist** - Implement the dynamic strategy composer that selects and combines methods based on user state.
+- [ ] **Phase 4: Shinka Evolution** - Deploy the automated prompt mutation and selection loop to self-optimize learning strategies.
+- [ ] **Phase 5: Multi-Modal Anchoring** - Integrate ambient audio/visual themes (Neural Context Anchoring) dynamically triggered by the Agent.
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contributing: Join the Cognitive Revolution
 
-We are looking for cognitive scientists, language teachers, domain experts (chess players, mathematicians), and developers! 
-If you want to design a new "Domain Ontology" or improve the prompt engineering for the LLM evaluator, please check out our [Contributing Guidelines](CONTRIBUTING.md).
+This project sits at the intersection of AI, cognitive science, and software engineering. We need:
+* **Researchers:** To help parse and structure cognitive science/SLA papers into the "Method Ontology."
+* **Domain Experts:** To define what "expert intuition" looks like in your field (Math, Chess, Medicine, etc.).
+* **AI Engineers:** To build the agentic composition and evolutionary prompt optimization loops.
+
+Check out our [Contributing Guidelines](CONTRIBUTING.md) to help evolve the system.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License. See the [LICENSE](LICENSE) file for details.
 
