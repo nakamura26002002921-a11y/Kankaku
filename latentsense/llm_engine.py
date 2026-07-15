@@ -1,5 +1,4 @@
 # latentsense/llm_engine.py
-
 import requests
 import json
 import re
@@ -52,7 +51,7 @@ class OllamaClient:
             if match:
                 try:
                     return json.loads(match.group(0))
-                except:
+                except json.JSONDecodeError:
                     pass
             return {}
 
