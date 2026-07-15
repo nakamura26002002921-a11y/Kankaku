@@ -1,5 +1,4 @@
 # latentsense/app.py
-
 import streamlit as st
 import time
 from core import LatentSenseOS, Concept, UserState
@@ -74,26 +73,34 @@ def main():
         st.subheader(f"🎯 Target: {concept.name}")
         st.info(f"📖 **Situation:** {scenario.situation}")
         
+        # 選択状態を保持するための変数を初期化
+        if "selected_choice" not in st.session_state:
+            st.session_state.selected_choice = None
+        
         col1, col2 = st.columns(2)
         with col1:
             st.markdown(f"### [ A ]\n{scenario.option_a}")
-            choice_a = st.button("Choose A", use_container_width=True, type="primary")
+            if st.button("Choose A", use_container_width=True, type="primary"):
+                st.session_state.selected_choice = "A"
         with col2:
             st.markdown(f"### [ B ]\n{scenario.option_b}")
-            choice_b = st.button("Choose B", use_container_width=True, type="primary")
+            if st.button("Choose B", use_container_width=True, type="primary"):
+                st.session_state.selected_choice = "B"
+                
+        # AかBが選択されている場合のみ、後続のUIを表示
+        if st.session_state.selected_choice:
+            st.success(f"Selected: **Option {st.session_state.selected_choice}**")
             
-        if choice_a or choice_b:
-            choice = "A" if choice_a else "B"
             # 簡易的な反応時間計測（本来はJS側で計る）
             reaction_time = 1500 
             
             # 自信度入力
             confidence = st.slider("Confidence Level (1-5)", 1, 5, 3)
             
-            if st.button("Submit Answer"):
+            if st.button("Submit Answer", type="primary"):
                 from core import UserResponse
                 response = UserResponse(
-                    choice=choice,
+                    choice=st.session_state.selected_choice,
                     confidence=confidence,
                     reaction_time_ms=reaction_time
                 )
@@ -102,6 +109,9 @@ def main():
                     feedback = os_instance.evaluator.evaluate(scenario, response, st.session_state.strategy)
                     st.session_state.feedback = feedback
                     st.session_state.response = response
+                    
+                    # 次のステップへ進む前に選択状態をクリア
+                    st.session_state.selected_choice = None
                     st.session_state.step = "feedback"
                     st.rerun()
 
