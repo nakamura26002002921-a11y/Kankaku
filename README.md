@@ -159,4 +159,3 @@ Check out our [Contributing Guidelines](CONTRIBUTING.md) to help build the Learn
 
 MIT License. See the [LICENSE](LICENSE) file for details.
 
-成させるか、どちらに進めましょうか？
