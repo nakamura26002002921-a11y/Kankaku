@@ -1,0 +1,4 @@
+pydantic>=2.0
+requests>=2.31
+PyYAML>=6.0
+psychopy>=2024.1.0

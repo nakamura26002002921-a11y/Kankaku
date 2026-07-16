@@ -1,0 +1,31 @@
+# config.yaml
+# LatentSense 全体設定
+
+llm:
+  model: "qwen2.5"
+  base_url: "http://localhost:11434"
+  timeout_seconds: 60
+  max_retries: 2
+
+item_bank:
+  # 各 (concept_id, difficulty_band) ごとに事前生成で維持する目標ストック数
+  target_stock_per_band: 20
+
+session:
+  default_iterations: 5
+  fullscreen: false
+  # セッション中に在庫切れが起きた場合のみ、緊急でオンラインLLM生成を行うか
+  allow_online_fallback: false
+  # フィードバックをLLMで生成するか（false の場合は規則ベースの即時フィードバック）
+  use_llm_feedback: false
+
+# 初回起動時、data/user_state.json が存在しない場合に使われる初期概念セット
+seed_concepts:
+  - id: "ru_motion_verbs"
+    domain: "language"
+    name: "ロシア語：接頭辞による移動動詞の局面変化"
+    current_mastery: 0.4
+  - id: "en_articles"
+    domain: "language"
+    name: "英語：冠詞 (a/the/無冠詞) の使い分け"
+    current_mastery: 0.3
