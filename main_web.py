@@ -75,6 +75,15 @@ def _expand_env_with_defaults(raw: str) -> str:
 def load_config() -> dict:
     path = Path(CONFIG_PATH)
     if not path.exists():
+        # 以前はここで黙って {} を返していたため、カレントディレクトリが
+        # latentsense/ でない場合などに "設定が空 -> seed_concepts も読めない"
+        # という原因不明のエラーにつながっていた。ここで明示的に警告する。
+        st.session_state["_config_load_error"] = (
+            f"config.yaml が見つかりません: {path.resolve()}\n"
+            f"（カレントディレクトリ: {Path.cwd()}）\n"
+            "`streamlit run main_web.py` は latentsense/ ディレクトリ直下で実行するか、"
+            "環境変数 LATENTSENSE_CONFIG で config.yaml の絶対パスを指定してください。"
+        )
         return {}
     raw = path.read_text(encoding="utf-8")
     # ${VAR:-default} / ${ENV_VAR} 形式のプレースホルダーを環境変数で展開する
@@ -82,14 +91,44 @@ def load_config() -> dict:
     return yaml.safe_load(raw) or {}
 
 
-def _load_user_state(config: dict) -> UserState:
-    state_path = Path(USER_STATE_PATH)
-    if state_path.exists():
-        return UserState.model_validate(json.loads(state_path.read_text(encoding="utf-8")))
-    state = UserState()
+def _seed_concepts_from_config(config: dict) -> dict[str, Concept]:
+    concepts: dict[str, Concept] = {}
     for seed in config.get("seed_concepts", []):
         concept = Concept(**seed)
-        state.concepts[concept.id] = concept
+        concepts[concept.id] = concept
+    return concepts
+
+
+def _load_user_state(config: dict) -> UserState:
+    state_path = Path(USER_STATE_PATH)
+    state: UserState | None = None
+
+    if state_path.exists():
+        try:
+            state = UserState.model_validate(json.loads(state_path.read_text(encoding="utf-8")))
+        except (json.JSONDecodeError, ValueError) as exc:
+            st.session_state["_config_load_error"] = (
+                f"{state_path} の読み込みに失敗しました（{exc}）。seed_concepts から再初期化します。"
+            )
+            state = None
+
+    if state is None:
+        state = UserState()
+
+    # ここが今回の主な修正点:
+    # user_state.json が存在していても、中身に concepts が1件も無い場合
+    # （壊れた初回実行や、config読み込み失敗時に空のまま保存された場合など）は
+    # seed_concepts へフォールバックする。「ファイルが存在する=もう初期化済み」
+    # とみなして seed_concepts を無視していたのが元のバグ。
+    if not state.concepts:
+        seeded = _seed_concepts_from_config(config)
+        if not seeded:
+            st.session_state["_config_load_error"] = (
+                st.session_state.get("_config_load_error", "")
+                + "\nconfig.yaml に seed_concepts が見つからないか、config自体が読み込めていません。"
+            ).strip()
+        state.concepts = seeded
+
     return state
 
 
@@ -176,11 +215,21 @@ def main() -> None:
 
     concept = select_focus_concept(state)
     if concept is None:
-        st.error(
-            "学習対象の概念がありません。config.yaml の seed_concepts を設定するか、"
-            "data/user_state.json を用意してください。"
-        )
+        st.error("学習対象の概念がありません。")
+        load_error = st.session_state.get("_config_load_error")
+        if load_error:
+            st.code(load_error, language=None)
+        else:
+            st.info(
+                f"config.yaml のパス: `{Path(CONFIG_PATH).resolve()}`\n\n"
+                f"user_state.json のパス: `{Path(USER_STATE_PATH).resolve()}`\n\n"
+                "上記に seed_concepts が定義されているか確認してください。"
+            )
         return
+
+    # seed_concepts から新規に初期化された場合はここで一度だけ永続化しておく
+    if not Path(USER_STATE_PATH).exists() and state.concepts:
+        _save_user_state(state)
 
     render_mastery_sidebar(concept.name, concept.current_mastery, state.blind_spots)
 

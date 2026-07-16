@@ -227,7 +227,13 @@ def main() -> None:
         logger.info("完了: 合計 %d 件生成, %d 件失敗。Item Bank 総件数: %d", total_generated, total_failed, len(bank))
 
     # user_state.json が存在しなかった場合は、seed から作った状態を書き戻しておく
-    save_user_state(state, args.user_state)
+    # 空の state.json を書き出すと、main_web.py 側で「ファイルが存在する = 初期化済み」
+    # と判定され seed_concepts へのフォールバックが働かなくなる。concepts が
+    # 1件も無い場合は書き出さない。
+    if state.concepts:
+        save_user_state(state, args.user_state)
+    else:
+        logger.warning("concepts が空のため user_state.json は書き出しません。")
 
 
 if __name__ == "__main__":
