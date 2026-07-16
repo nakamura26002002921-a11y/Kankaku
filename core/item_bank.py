@@ -24,9 +24,12 @@ from core.models import DifficultyBand, Scenario
 class ItemBank:
     """`data/item_bank.json` を読み書きする問題バンクリポジトリ。"""
 
-    def __init__(self, path: str | Path = "data/item_bank.json"):
+    def __init__(self, path: str | Path = "data/item_bank.json", flagged_path: Optional[str | Path] = None):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        # 「この問題はおかしい」で報告された問題の退避先。既定では item_bank.json と
+        # 同じ data/ ディレクトリに flagged_items.json として保存する。
+        self.flagged_path = Path(flagged_path) if flagged_path else self.path.parent / "flagged_items.json"
         self._items: List[Scenario] = self._load()
 
     # ---------- 永続化 ----------
@@ -111,6 +114,50 @@ class ItemBank:
         sm2_update(item, is_correct=is_correct, confidence=confidence)
         self.save()
         return item
+
+    # ---------- 品質不良の報告 ("この問題はおかしい" ボタン) ----------
+
+    def flag(self, item_id: str, reason: str = "") -> Optional[Scenario]:
+        """ユーザーから「この問題はおかしい」と報告された問題を Item Bank から取り除き、
+        `flagged_items.json` に理由付きで退避する。
+
+        取り除かれた分だけ在庫が減るため、次回 `scripts/pre_generate.py` を実行した際に
+        自動的に代わりの問題が補充される（セッション中に追加でLLMを呼ぶ必要はない）。
+        """
+        item = next((it for it in self._items if it.item_id == item_id), None)
+        if item is None:
+            return None
+
+        self._items = [it for it in self._items if it.item_id != item_id]
+        self.save()
+        self._archive_flagged(item, reason)
+        return item
+
+    def _archive_flagged(self, item: Scenario, reason: str) -> None:
+        existing: List[dict] = []
+        if self.flagged_path.exists():
+            try:
+                existing = json.loads(self.flagged_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                existing = []
+
+        record = item.model_dump(mode="json")
+        record["flag_reason"] = reason
+        record["flagged_at"] = time.time()
+        existing.append(record)
+
+        tmp_path = self.flagged_path.with_suffix(".json.tmp")
+        tmp_path.write_text(json.dumps(existing, ensure_ascii=False, indent=2), encoding="utf-8")
+        tmp_path.replace(self.flagged_path)
+
+    def list_flagged(self) -> List[dict]:
+        """報告済みの問題一覧を返す（デバッグ・レビュー用）。"""
+        if not self.flagged_path.exists():
+            return []
+        try:
+            return json.loads(self.flagged_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            return []
 
     def all_for_concept(self, concept_id: str) -> List[Scenario]:
         return [it for it in self._items if it.concept_id == concept_id]
