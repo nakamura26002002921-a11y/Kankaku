@@ -181,6 +181,12 @@ def main() -> None:
     total_failed = 0
 
     for concept in concepts:
+        # resolve_target_concepts() は「生成対象の一覧」を返すだけで state を書き換えない。
+        # ここで明示的に state.concepts へ upsert しないと、seed_concepts 由来の概念が
+        # 一度も user_state.json に書き出されず、Web UI 側が「概念がありません」と
+        # 表示し続けるバグになる。
+        state.concepts[concept.id] = concept
+
         for band in bands_to_fill(args, concept):
             current_count = bank.count_available(concept.id, band)
             deficit = max(0, target_stock - current_count)
