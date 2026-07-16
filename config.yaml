@@ -1,9 +1,24 @@
 # config.yaml
 # LatentSense 全体設定
+#
+# Tailscale 分散構成について:
+#   - llm.base_url は環境変数 ${OLLAMA_BASE_URL} を優先する。
+#     未設定の場合は "http://localhost:11434" にフォールバックする
+#     （デスクトップPC上でこのアプリを動かす場合や、開発時向け）。
+#   - main_web.py / scripts/pre_generate.py は起動時に
+#     os.path.expandvars() でこのファイルを読み込むため、
+#     ${VAR} 形式のプレースホルダーはすべて展開される。
+#   - ラップトップ側での起動例 (bash):
+#       export OLLAMA_BASE_URL="http://100.x.y.z:11434"
+#       streamlit run main_web.py
+#   - Windows PowerShell の場合:
+#       $env:OLLAMA_BASE_URL = "http://100.x.y.z:11434"
+#       streamlit run main_web.py
 
 llm:
   model: "qwen2.5"
-  base_url: "http://localhost:11434"
+  # Tailscale IP を環境変数 OLLAMA_BASE_URL で指定する。例: http://100.101.102.103:11434
+  base_url: "${OLLAMA_BASE_URL:-http://localhost:11434}"
   timeout_seconds: 60
   max_retries: 2
 
@@ -14,9 +29,10 @@ item_bank:
 session:
   default_iterations: 5
   fullscreen: false
-  # セッション中に在庫切れが起きた場合のみ、緊急でオンラインLLM生成を行うか
+  # セッション中に在庫切れが起きた場合のみ、緊急でリモートLLM(Tailscale経由)生成を行うか。
+  # 既定 false: 出題・習熟度更新はローカル(item_bank.json / mastery.py)のみで完結させる。
   allow_online_fallback: false
-  # フィードバックをLLMで生成するか（false の場合は規則ベースの即時フィードバック）
+  # フィードバックをLLMで生成するか（false の場合は規則ベースの即時フィードバック、ローカルのみで完結）
   use_llm_feedback: false
 
 # 初回起動時、data/user_state.json が存在しない場合に使われる初期概念セット

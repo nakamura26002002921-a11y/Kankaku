@@ -52,12 +52,33 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("pre_generate")
 
 
+import re
+
+_ENV_DEFAULT_PATTERN = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*):-([^}]*)\}")
+
+
+def _expand_env_with_defaults(raw: str) -> str:
+    """${VAR:-default} (bashライク) と ${VAR} / $VAR の両方を展開する。
+    os.path.expandvars は ':-default' 記法を解釈しないため、先にこちらで処理する。
+    Tailscale IP を OLLAMA_BASE_URL 環境変数で上書きする用途を想定。
+    """
+    import os
+
+    def _sub(match: "re.Match[str]") -> str:
+        var_name, default = match.group(1), match.group(2)
+        return os.environ.get(var_name, default)
+
+    raw = _ENV_DEFAULT_PATTERN.sub(_sub, raw)
+    return os.path.expandvars(raw)
+
+
 def load_config(config_path: str) -> dict:
     path = Path(config_path)
     if not path.exists():
         logger.warning("config.yaml が見つかりません。デフォルト設定で続行します: %s", path)
         return {}
-    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    raw = _expand_env_with_defaults(path.read_text(encoding="utf-8"))
+    return yaml.safe_load(raw) or {}
 
 
 def load_user_state(path: str) -> UserState:
