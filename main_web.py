@@ -32,6 +32,7 @@ from infra.data_logger import DataLogger
 from infra.llm_client import DefaultScenarioStore, LLMClientError, LLMContentClient, OllamaClient
 from infra.prompt_manager import PromptManager
 from ui.streamlit_view import (
+    FlagRequest,
     inject_base_style,
     render_feedback,
     render_llm_connection_status,
@@ -308,8 +309,17 @@ def main() -> None:
     # ---------- フェーズ: 回答待ち ----------
     elif st.session_state["phase"] == "answer":
         item = st.session_state["current_item"]
-        response = render_scenario(item)
-        if response is not None:
+        result = render_scenario(item)
+
+        if isinstance(result, FlagRequest):
+            bank.flag(result.item_id, reason=result.reason)
+            st.session_state["current_item"] = None
+            st.session_state["phase"] = "select"
+            st.toast(f"問題を報告してスキップしました（理由: {result.reason}）", icon="⚠️")
+            st.rerun()
+
+        elif result is not None:
+            response = result
             st.session_state["current_response"] = response
 
             is_correct, mastery_delta, calibration_label = evaluate_response(item, response)
