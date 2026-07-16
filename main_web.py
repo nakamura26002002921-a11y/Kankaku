@@ -139,14 +139,20 @@ def _save_user_state(state: UserState) -> None:
 
 
 def init_session() -> None:
+    """1回だけ行う「重い」初期化（config, LLMクライアント, ロガー等）。
+
+    以前は state / bank もここに含めていたため、初回ロード時に
+    data/user_state.json がまだ無く「概念が0件」で失敗すると、その空の
+    状態が st.session_state に固定されてしまい、後から
+    scripts/pre_generate.py でデータを生成してもブラウザを開いたままだと
+    二度と再読込されない（サーバーの完全再起動が必須）というバグがあった。
+    state / bank は refresh_state() で毎回の rerun ごとに読み直す。
+    """
     if "initialized" in st.session_state:
         return
 
     config = load_config()
     st.session_state["config"] = config
-    st.session_state["state"] = _load_user_state(config)
-    st.session_state["bank"] = ItemBank(ITEM_BANK_PATH)
-    st.session_state["logger"] = DataLogger(user_id=st.session_state["state"].user_id, logs_dir=LOGS_DIR)
 
     llm_cfg = config.get("llm", {})
     session_cfg = config.get("session", {})
@@ -178,6 +184,23 @@ def init_session() -> None:
     st.session_state["initialized"] = True
 
 
+def refresh_state() -> None:
+    """state (user_state.json) と item_bank (item_bank.json) を毎回のrerunで読み直す。
+
+    どちらも小さなJSONファイルの読み込みなのでコストは無視できるレベルであり、
+    これにより「別プロセス(pre_generate.py)がバックグラウンドでデータを更新した」
+    ケースでもブラウザをリロードするだけで反映されるようになる。
+    ただし出題中(phase != 'select')に読み直すと出題内容がズレる恐れがあるため、
+    出題選択待ちのタイミングでのみ更新する。
+    """
+    if st.session_state.get("phase") != "select" and "state" in st.session_state:
+        return
+    config = st.session_state["config"]
+    st.session_state["state"] = _load_user_state(config)
+    st.session_state["bank"] = ItemBank(ITEM_BANK_PATH)
+    st.session_state["logger"] = DataLogger(user_id=st.session_state["state"].user_id, logs_dir=LOGS_DIR)
+
+
 def select_focus_concept(state: UserState) -> Concept | None:
     if not state.concepts:
         return None
@@ -204,6 +227,7 @@ def rule_based_gap_message(is_correct: bool, confidence: int) -> str:
 def main() -> None:
     st.set_page_config(page_title="LatentSense", page_icon="🧠", layout="centered")
     init_session()
+    refresh_state()
     inject_base_style()
 
     config = st.session_state["config"]
@@ -225,6 +249,16 @@ def main() -> None:
                 f"user_state.json のパス: `{Path(USER_STATE_PATH).resolve()}`\n\n"
                 "上記に seed_concepts が定義されているか確認してください。"
             )
+        st.caption(
+            "別プロセス（scripts/pre_generate.py 等）でデータを更新した場合は、"
+            "下のボタンで再読込してください。"
+        )
+        if st.button("🔄 状態を再読込する"):
+            st.session_state.pop("state", None)
+            st.session_state.pop("bank", None)
+            st.session_state.pop("_config_load_error", None)
+            load_config.clear()  # st.cache_resource のキャッシュもクリアする
+            st.rerun()
         return
 
     # seed_concepts から新規に初期化された場合はここで一度だけ永続化しておく
