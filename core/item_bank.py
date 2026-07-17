@@ -164,4 +164,3 @@ class ItemBank:
 
     def __len__(self) -> int:
         return len(self._items)
-

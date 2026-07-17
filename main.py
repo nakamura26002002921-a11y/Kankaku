@@ -29,6 +29,8 @@ from core.models import Concept, TrialRecord, UserState
 from infra.data_logger import DataLogger
 from infra.llm_client import DefaultScenarioStore, LLMClientError, LLMContentClient, OllamaClient
 from infra.prompt_manager import PromptManager
+from schedule.interleaving import select_next_concept
+from schedule.SRS import update_concept_schedule
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("main")
@@ -60,16 +62,20 @@ def save_user_state(state: UserState, path: str) -> None:
     state_path.write_text(state.model_dump_json(indent=2), encoding="utf-8")
 
 
-def select_focus_concept(state: UserState) -> Concept:
-    """ブラインドスポットを最優先、それ以外は最低習熟度の概念を選ぶ。"""
+def select_focus_concept(state: UserState, config: dict) -> Concept:
+    """schedule/interleaving.py の選定ロジックを config.yaml の設定値で呼び出す。"""
     if not state.concepts:
         raise SystemExit("学習対象の概念がありません。config.yaml の seed_concepts を確認してください。")
 
-    for concept_id in state.blind_spots:
-        if concept_id in state.concepts:
-            return state.concepts[concept_id]
-
-    return min(state.concepts.values(), key=lambda c: c.current_mastery)
+    interleaving_cfg = config.get("interleaving", {})
+    concept = select_next_concept(
+        state,
+        interleave_probability=interleaving_cfg.get("probability", 0.2),
+        high_mastery_threshold=interleaving_cfg.get("high_mastery_threshold", 0.8),
+        prefer_due_only=interleaving_cfg.get("prefer_due_only", False),
+    )
+    assert concept is not None  # state.concepts が空でないことは上でチェック済み
+    return concept
 
 
 def run_session(args: argparse.Namespace) -> None:
@@ -110,7 +116,7 @@ def run_session(args: argparse.Namespace) -> None:
         )
 
         for i in range(num_iterations):
-            concept = select_focus_concept(state)
+            concept = select_focus_concept(state, config)
             band = mastery_to_band(concept.current_mastery)
 
             item = bank.get_next_item_for_session(concept.id, concept.current_mastery)
@@ -160,6 +166,17 @@ def run_session(args: argparse.Namespace) -> None:
             mastery_before = concept.current_mastery
             apply_feedback_to_concept(concept, response, feedback)
             sm2_update(item, is_correct=is_correct, confidence=response.confidence)
+
+            srs_cfg = config.get("srs", {})
+            update_concept_schedule(
+                concept,
+                is_correct=is_correct,
+                confidence=response.confidence,
+                base_interval_days=srs_cfg.get("base_interval_days", 1.0),
+                growth_factor=srs_cfg.get("growth_factor", 2.5),
+                confidence_threshold=srs_cfg.get("confidence_threshold", 4),
+            )
+
             bank.save()
 
             # ブラインドスポットの更新

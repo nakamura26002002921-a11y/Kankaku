@@ -26,6 +26,18 @@ item_bank:
   # 各 (concept_id, difficulty_band) ごとに事前生成で維持する目標ストック数
   target_stock_per_band: 20
 
+# 概念レベルの間隔反復 (schedule/SRS.py)
+srs:
+  base_interval_days: 1.0     # 初回の復習間隔（日）
+  growth_factor: 2.5          # 正解&高確信のたびに間隔を掛け合わせる倍率
+  confidence_threshold: 4     # これ以上を「高確信」とみなす閾値 (1-5)
+
+# インターリービング（混ぜ込み学習）による出題概念選定 (schedule/interleaving.py)
+interleaving:
+  probability: 0.2                # 習熟済み概念をランダムに混ぜ込む確率
+  high_mastery_threshold: 0.8     # 「習熟済み」とみなす mastery の閾値
+  prefer_due_only: false          # true にすると、SRSの復習期限が来ている概念のみを優先候補にする
+
 session:
   default_iterations: 5
   fullscreen: false

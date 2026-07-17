@@ -91,11 +91,19 @@ def render_scenario(scenario: Scenario) -> Optional[Union[UserResponse, FlagRequ
         col_a, col_b = st.columns(2)
         with col_a:
             if st.button(f"A: {scenario.option_a}", use_container_width=True, key=f"opt_a_{scenario.item_id}"):
+                # 反応時間は「AまたはBを押した瞬間」で確定させる。
+                # 確信度の選定に要した時間は直感の反応時間には含めない。
                 st.session_state["_pending_choice"] = "A"
+                st.session_state["_reaction_time_ms"] = int(
+                    (time.time() - st.session_state["_scenario_shown_at"]) * 1000
+                )
                 st.rerun()
         with col_b:
             if st.button(f"B: {scenario.option_b}", use_container_width=True, key=f"opt_b_{scenario.item_id}"):
                 st.session_state["_pending_choice"] = "B"
+                st.session_state["_reaction_time_ms"] = int(
+                    (time.time() - st.session_state["_scenario_shown_at"]) * 1000
+                )
                 st.rerun()
         return None
 
@@ -109,8 +117,10 @@ def render_scenario(scenario: Scenario) -> Optional[Union[UserResponse, FlagRequ
         key=f"confidence_{scenario.item_id}",
     )
 
+    st.caption(f"直感反応時間: {st.session_state.get('_reaction_time_ms', 0)} ms")
+
     if st.button("回答を確定する", type="primary", key=f"confirm_{scenario.item_id}"):
-        reaction_time_ms = int((time.time() - st.session_state["_scenario_shown_at"]) * 1000)
+        reaction_time_ms = st.session_state.get("_reaction_time_ms", 0)
         response = UserResponse(
             choice=pending_choice,  # type: ignore[arg-type]
             confidence=int(confidence),
@@ -120,13 +130,30 @@ def render_scenario(scenario: Scenario) -> Optional[Union[UserResponse, FlagRequ
         st.session_state.pop("_pending_choice", None)
         st.session_state.pop("_scenario_shown_at", None)
         st.session_state.pop("_scenario_item_id", None)
+        st.session_state.pop("_reaction_time_ms", None)
         return response
 
     return None
 
 
 def render_feedback(scenario: Scenario, response: UserResponse, feedback: Feedback) -> None:
-    """分析結果(confidence_gap_analysis)とメタファー(discrimination_metaphor)を表示する。"""
+    """分析結果(confidence_gap_analysis)とメタファー(discrimination_metaphor)を表示する。
+
+    どの問題に対する結果かが一目で分かるよう、状況文(situation)と
+    選択肢(option_a/b)を、ユーザーが選んだ方をハイライトした状態で再表示する。
+    """
+    with st.container(border=True):
+        st.markdown(f'<span class="ls-badge">難度: {scenario.difficulty_band.value}</span>', unsafe_allow_html=True)
+        st.markdown(f'<div class="ls-situation">{scenario.situation}</div>', unsafe_allow_html=True)
+
+        for label, text in (("A", scenario.option_a), ("B", scenario.option_b)):
+            is_chosen = label == response.choice
+            is_correct_option = label == scenario.correct_answer
+            marker = "👉 " if is_chosen else "　"
+            suffix = " ✅ (正解)" if is_correct_option else ""
+            weight = "**" if is_chosen else ""
+            st.markdown(f"{marker}{weight}{label}: {text}{suffix}{weight}")
+
     if feedback.is_correct:
         st.markdown('<span class="ls-correct">✅ 正解！</span>', unsafe_allow_html=True)
     else:
@@ -148,12 +175,19 @@ def render_feedback(scenario: Scenario, response: UserResponse, feedback: Feedba
     )
 
 
-def render_mastery_sidebar(concept_name: str, mastery: float, blind_spots: list[str]) -> None:
-    """サイドバーに現在の概念と習熟度、ブラインドスポットを表示する。"""
+def render_mastery_sidebar(
+    concept_name: str,
+    mastery: float,
+    blind_spots: list[str],
+    next_review_date: Optional[str] = None,
+) -> None:
+    """サイドバーに現在の概念と習熟度、ブラインドスポット、SRSの次回復習日を表示する。"""
     with st.sidebar:
         st.markdown("### 🧠 現在の学習状況")
         st.write(f"概念: **{concept_name}**")
         st.progress(mastery, text=f"習熟度: {mastery:.2f}")
+        if next_review_date:
+            st.caption(f"📅 次回復習予定日: {next_review_date}")
         if blind_spots:
             st.warning("⚠️ ブラインドスポット（自信過剰バイアス検出）: " + ", ".join(blind_spots))
         else:
@@ -169,4 +203,3 @@ def render_llm_connection_status(base_url: str, ok: bool, detail: str = "") -> N
             st.success("接続OK")
         else:
             st.error(f"接続失敗: {detail}" if detail else "接続失敗")
-

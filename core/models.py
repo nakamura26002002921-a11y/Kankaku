@@ -25,6 +25,13 @@ class Concept(BaseModel):
     name: str
     current_mastery: float = Field(ge=0.0, le=1.0, default=0.3)
 
+    # ---- 概念レベルの間隔反復 (schedule/SRS.py が読み書きする) ----
+    # Scenario 側の SM-2 (core/mastery.py の sm2_update) は「個々の問題」の
+    # 出題間隔を管理するのに対し、こちらは「概念そのもの」を次にいつ
+    # 復習すべきかを管理する、より粗い粒度のスケジュールである。
+    review_interval_days: float = Field(default=0.0, ge=0.0)
+    next_review_date: Optional[str] = None  # ISO 8601 文字列 (YYYY-MM-DD) で保持
+
     @field_validator("current_mastery")
     @classmethod
     def clamp_mastery(cls, v: float) -> float:

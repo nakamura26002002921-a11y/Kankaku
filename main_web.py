@@ -31,6 +31,8 @@ from core.models import Concept, Feedback, TrialRecord, UserState
 from infra.data_logger import DataLogger
 from infra.llm_client import DefaultScenarioStore, LLMClientError, LLMContentClient, OllamaClient
 from infra.prompt_manager import PromptManager
+from schedule.interleaving import select_next_concept
+from schedule.SRS import update_concept_schedule
 from ui.streamlit_view import (
     FlagRequest,
     inject_base_style,
@@ -202,13 +204,15 @@ def refresh_state() -> None:
     st.session_state["logger"] = DataLogger(user_id=st.session_state["state"].user_id, logs_dir=LOGS_DIR)
 
 
-def select_focus_concept(state: UserState) -> Concept | None:
-    if not state.concepts:
-        return None
-    for concept_id in state.blind_spots:
-        if concept_id in state.concepts:
-            return state.concepts[concept_id]
-    return min(state.concepts.values(), key=lambda c: c.current_mastery)
+def select_focus_concept(state: UserState, config: dict) -> Concept | None:
+    """schedule/interleaving.py の選定ロジックを config.yaml の設定値で呼び出す薄いラッパー。"""
+    interleaving_cfg = config.get("interleaving", {})
+    return select_next_concept(
+        state,
+        interleave_probability=interleaving_cfg.get("probability", 0.2),
+        high_mastery_threshold=interleaving_cfg.get("high_mastery_threshold", 0.8),
+        prefer_due_only=interleaving_cfg.get("prefer_due_only", False),
+    )
 
 
 def rule_based_gap_message(is_correct: bool, confidence: int) -> str:
@@ -238,7 +242,14 @@ def main() -> None:
     st.title("🧠 LatentSense")
     st.caption("認知科学に基づく適応型学習 — Web UI クライアント (Tailscale分散構成)")
 
-    concept = select_focus_concept(state)
+    # インターリービングはランダム選定のため、出題中(answer/feedback)は
+    # 同じ概念を使い続ける必要がある。新しい問題を選ぶ("select"フェーズ)
+    # タイミングでのみ再選定し、それ以外は session_state に保持した概念を使う。
+    if st.session_state["phase"] == "select" or st.session_state.get("current_concept_id") is None:
+        concept = select_focus_concept(state, config)
+        st.session_state["current_concept_id"] = concept.id if concept else None
+    else:
+        concept = state.concepts.get(st.session_state["current_concept_id"])
     if concept is None:
         st.error("学習対象の概念がありません。")
         load_error = st.session_state.get("_config_load_error")
@@ -266,7 +277,7 @@ def main() -> None:
     if not Path(USER_STATE_PATH).exists() and state.concepts:
         _save_user_state(state)
 
-    render_mastery_sidebar(concept.name, concept.current_mastery, state.blind_spots)
+    render_mastery_sidebar(concept.name, concept.current_mastery, state.blind_spots, concept.next_review_date)
 
     llm_cfg = config.get("llm", {})
     with st.sidebar.expander("接続設定 (詳細)"):
@@ -341,6 +352,17 @@ def main() -> None:
             mastery_before = concept.current_mastery
             apply_feedback_to_concept(concept, response, feedback)
             sm2_update(item, is_correct=is_correct, confidence=response.confidence)
+
+            srs_cfg = config.get("srs", {})
+            update_concept_schedule(
+                concept,
+                is_correct=is_correct,
+                confidence=response.confidence,
+                base_interval_days=srs_cfg.get("base_interval_days", 1.0),
+                growth_factor=srs_cfg.get("growth_factor", 2.5),
+                confidence_threshold=srs_cfg.get("confidence_threshold", 4),
+            )
+
             bank.save()
             _save_user_state(state)
 
@@ -400,4 +422,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
