@@ -127,7 +127,9 @@ class LLMContentClient:
 
     def generate_scenario(self, concept: Concept, mastery: float) -> Scenario:
         band = mastery_to_band(mastery)
-        prompt_version = self.prompts.get_version("scenario_gen")
+        user_prompt_version = self.prompts.get_version("scenario_gen")
+        system_prompt_version = self.prompts.get_version("scenario_gen.system")
+        prompt_version = f"{user_prompt_version}+sys:{system_prompt_version}"
         user_prompt = self.prompts.render(
             "scenario_gen",
             concept_name=concept.name,
@@ -135,11 +137,7 @@ class LLMContentClient:
             mastery=f"{mastery:.2f}",
             difficulty_band=band.value,
         )
-        system_prompt = (
-            "You are an expert in cognitive linguistics and domain-specific intuition. "
-            "Output MUST be a single valid JSON object matching the requested schema, "
-            "with no markdown fences and no extra commentary."
-        )
+        system_prompt = self.prompts.render("scenario_gen.system")
 
         payload: Optional[ScenarioLLMPayload] = None
         last_error: Optional[Exception] = None
@@ -193,7 +191,9 @@ class LLMContentClient:
     # ---------- フィードバック生成 ----------
 
     def generate_feedback(self, scenario: Scenario, response: UserResponse, is_correct: bool, mastery_delta: float) -> Feedback:
-        prompt_version = self.prompts.get_version("feedback_gen")
+        user_prompt_version = self.prompts.get_version("feedback_gen")
+        system_prompt_version = self.prompts.get_version("feedback_gen.system")
+        prompt_version = f"{user_prompt_version}+sys:{system_prompt_version}"
         user_prompt = self.prompts.render(
             "feedback_gen",
             situation=scenario.situation,
@@ -205,11 +205,7 @@ class LLMContentClient:
             is_correct=str(is_correct),
             hidden_expert_eye=scenario.hidden_expert_eye,
         )
-        system_prompt = (
-            "You are a cognitive coach analyzing a learner's A/B intuition test response. "
-            "Output MUST be a single valid JSON object matching the requested schema, "
-            "with no markdown fences and no extra commentary. Respond in Japanese."
-        )
+        system_prompt = self.prompts.render("feedback_gen.system")
 
         payload: Optional[FeedbackLLMPayload] = None
         last_error: Optional[Exception] = None
