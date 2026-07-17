@@ -169,3 +169,4 @@ def render_llm_connection_status(base_url: str, ok: bool, detail: str = "") -> N
             st.success("接続OK")
         else:
             st.error(f"接続失敗: {detail}" if detail else "接続失敗")
+
